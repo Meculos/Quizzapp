@@ -1,0 +1,29 @@
+{% extends "quiz_app/layout.html" %}
+{% load static %}
+
+{% block title %}
+    Lobby - Quizzapp
+{% endblock %}
+
+{% block main %}
+    <div>
+        <div>
+            <h2>Game Room</h2>
+        </div>
+        <div id="roomcodediv" data-room-code="{{ room_code }}">
+            <p>Room Code: {{ room_code }}</p>
+        </div>
+
+        <div id="player-list" class="list-group my-4"></div>
+
+        <div id="ishost" data-is-host="{{ is_host }}">
+            {% if is_host %}
+                <button id="start-game-btn" class="btn btn-success" disabled>Start Game</button>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'quiz_app/lobby.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "quiz_app/layout.html" %}
+{% load static %}
+
+{% block title %}
+    Homepage - Quizzapp
+{% endblock %}
+
+{% block main %}
+    <div>
+        <h1 class="fw-bold">Ultimate Trivia Battle</h1>
+        <p class="lead">Test your knowledge solo or challenge others in real time!</p>
+
+        <div class="row mt-4">
+            <div class="col-md-6 mb-3">
+                <button class="btn btn-warning btn-lg w-100">🎮 Single Play</button>
+            </div>
+            <div class="col-md-6 mb-3">
+                <a href="{% url 'game_room' %}" class="btn btn-danger btn-lg w-100">⚔️ Multiplayer Mode</a>
+            </div>
+        </div>
+
+        <div class="card bg-secondary text-light mt-4">
+            <div class="card-body">
+                <h2 class="card-title">🏆 Leaderboard</h2>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item bg-secondary text-light">1. UserA - 5000 pts</li>
+                    <li class="list-group-item bg-secondary text-light">2. UserB - 4700 pts</li>
+                    <li class="list-group-item bg-secondary text-light">3. UserC - 4500 pts</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            {% if not user.is_authenticated %}
+                <a class="btn btn-outline-light me-2" href="{% url 'login_view' %}">Login</a>
+                <a class="btn btn-outline-light" href="{% url 'register_view' %}">Register</a>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
