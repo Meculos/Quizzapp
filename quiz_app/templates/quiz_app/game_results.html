@@ -1,0 +1,24 @@
+{% extends "quiz_app/layout.html" %}
+{% load static %}
+
+{% block title %}
+    Game Area - Quizzapp
+{% endblock %}
+
+{% block main %}
+    <div class="game-container">
+        <header>
+            <h2>Game Results</h2>
+        </header>
+
+        <div id="roomcode" data-room-code="{{ room_code }}">
+            <strong>Room Code:</strong> {{ room_code }}
+        </div>
+
+        <div class="result-container"></div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'quiz_app/gameresults.js' %}"></script>
+{% endblock %}

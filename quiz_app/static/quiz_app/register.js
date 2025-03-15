@@ -28,10 +28,8 @@ function registerUser() {
     .then(response => response.json())
     .then(data => {
         if (data.message) {
-            localStorage.setItem('access_token', data.access_token)
-            localStorage.setItem('refresh_token', data.refresh_token)
             alert(data.message)
-            window.location.href = '/quiz_app/'
+            window.location.href = '/quiz_app/login_page/'
         } else {
             alert(data.error)
         }

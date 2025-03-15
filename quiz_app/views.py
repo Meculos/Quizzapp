@@ -4,12 +4,24 @@ from django.core.exceptions import ValidationError
 from django.shortcuts import render, get_object_or_404
 from rest_framework.permissions import (IsAuthenticated, IsAdminUser, AllowAny)
 from rest_framework_simplejwt.tokens import RefreshToken
-from .models import User, GameRoom, Player, GameState
+from .models import User, GameRoom, Player, GameState, Question
 from .serializers import GameRoomSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.contrib.auth import authenticate, login, logout
 from rest_framework import serializers
+import random
 from rest_framework import status, generics, viewsets
+import datetime
+
+
+from django.http import JsonResponse
+
+def current_user(request):
+    if request.user.is_authenticated:
+        return JsonResponse({"user": request.user.username, "authenticated": True})
+    return JsonResponse({"user": None, "authenticated": False})
+
 
 # Create your views here.
 
@@ -39,16 +51,70 @@ class RegisterView(APIView):
         if User.objects.filter(email=email).exists():
             return Response({"error": "Email already exists"}, status=status.HTTP_400_BAD_REQUEST)
 
-        user = User.objects.create(username=username, email=email)
-        user.set_password(password1)
-        user.save()
-
-        refresh = RefreshToken.for_user(user)
+        User.objects.create_user(username=username, email=email, password=password1)  # ✅ Fix: create_user()
+        
         return Response({
             "message": "User successfully created",
-            "access_token": str(refresh.access_token),
-            "refresh_token": str(refresh)
         }, status=status.HTTP_201_CREATED)
+
+class LoginApiView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        username = request.data.get("username")
+        password = request.data.get("password")
+
+        user = authenticate(request, username=username, password=password)
+        if user:
+            login(request, user) 
+            refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
+            refresh_token = str(refresh)
+            response = Response({"message": "User logged in successfully",}, status=status.HTTP_201_CREATED)
+
+            response.set_cookie(
+                key="access_token",
+                value=access_token,
+                httponly=True, 
+                samesite="None"
+            )
+            response.set_cookie(
+                key="refresh_token",
+                value=refresh_token,
+                httponly=True,
+                samesite="None"
+            )
+            return response
+        else:
+            return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
+        
+class LogoutApiView(APIView):
+    def post(self, request):
+        logout(request)
+        response = JsonResponse({"message": "Logged out successfully"})
+        response.delete_cookie("access_token")
+        response.delete_cookie("refresh_token")
+        return response
+    
+class RefreshTokenView(APIView):
+    def post(self, request):
+        refresh_token = request.COOKIES.get("refresh_token")
+
+        if not refresh_token:
+            return Response({"error": "No refresh token"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            new_access_token = str(RefreshToken(refresh_token).access_token)
+            response = Response({"message": "Token refreshed"}, staus=status.HTTP_200_OK)
+            response.set_cookie(
+                key="access_token",
+                value=new_access_token,
+                httponly=True,
+                samesite="None"
+            )
+            return response
+        except Exception:
+            return Response({"error": "Invalid refresh token"}, status=status.HTTP_400_BAD_REQUEST)
     
 class ListCreateGameRoom(viewsets.ModelViewSet):
     serializer_class = GameRoomSerializer
@@ -72,11 +138,11 @@ class ListCreateGameRoom(viewsets.ModelViewSet):
         game_room.players.add(self.request.user)
 
     
-# django views.......
+# django views......
 def register(request):
     return render(request, "quiz_app/register.html")
 
-def login(request):
+def login_user(request):
     return render(request, "quiz_app/login.html")
 
 def index(request):
@@ -104,4 +170,14 @@ def game_lobby(request, room_code):
     return render(request, "quiz_app/lobby.html", {
         "room_code": room_code,
         "is_host": is_host
+    })
+
+def game_area(request, room_code):
+    return render(request, "quiz_app/game_area.html", {
+        "room_code": room_code,
+    })
+
+def game_results(request, room_code):
+    return render(request, "quiz_app/game_results.html", {
+        "room_code": room_code,
     })

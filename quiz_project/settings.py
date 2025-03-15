@@ -133,8 +133,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # rest framework settings
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework_simplejwt.authentication.JWTAuthentication",  # Use JWT instead of token
-        "rest_framework.authentication.SessionAuthentication"
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ],
 }
 
@@ -144,6 +144,7 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),  # Refresh token valid for 7 days
     "ROTATE_REFRESH_TOKENS": True,  # Get a new refresh token when using refresh
     "BLACKLIST_AFTER_ROTATION": True,  # Blacklist old refresh tokens
+    "SIGNING_KEY": SECRET_KEY,
     "AUTH_HEADER_TYPES": ("Bearer",),  # Use "Bearer <token>" format
 }
 
@@ -156,4 +157,8 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # Default Django authentication
+]
 

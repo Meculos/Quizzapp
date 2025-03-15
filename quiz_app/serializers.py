@@ -3,7 +3,7 @@ from rest_framework import serializers
 from .models import GameRoom, GameState, User, Player, Question
 
 class GameRoomSerializer(serializers.ModelSerializer):
-    host_username = serializers.CharField(source="host.username")
+    host_username = serializers.CharField(source="host.username", read_only=True)
     class Meta:
         model = GameRoom
         fields = ["id", "room_code", "host", "players", "is_active", "created_at", "host_username"]

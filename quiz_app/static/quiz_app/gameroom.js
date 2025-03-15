@@ -8,45 +8,17 @@ document.addEventListener('DOMContentLoaded', () => {
 })
 
 async function listGameRooms() {
-    const accessToken = localStorage.getItem('access_token')
-    const gameRoomDiv = document.getElementById('game-room-div')
-
-    if (!accessToken) {
-        gameRoomDiv.innerHTML = `
-            <div class="text-center">
-                <p>
-                    No user logged in. Please <a href="/quiz_app/login_page/"> Login</a>
-                    or <a href="/quiz_app/register_page/"> Register</a>
-                </p>
-            </div>
-        `;
-        return;
-    }
+    const gameRoomDiv = document.getElementById('game-room-div');
 
     try {
-        const response = await fetch('/quiz_app/api/game_room', {
+        const data = await fetchWithToken('/quiz_app/api/game_room', {
             method: 'GET',
             headers: {
-                'authorization': `Bearer ${accessToken}`
+                'Content-Type': 'application/json'
             }
-        })
+        });
 
-        if (!response.ok) {
-            if (response.status === 401) {
-                gameRoomDiv.innerHTML = `
-                    <div class="text-center">
-                        <p>
-                            Session Expired. Please <a href="/quiz_app/login_page/"> Login</a>
-                        </p>
-                    </div>
-                `;
-                localStorage.removeItem('access_token')
-                localStorage.removeItem('refresh_token')
-                return;
-            }
-        }
-
-        const data = await response.json()
+        if (!data) return;  // If user is logged out, stop execution
 
         if (data.length === 0) {
             gameRoomDiv.innerHTML = `
@@ -55,7 +27,7 @@ async function listGameRooms() {
                         No GameRoom created yet. <a href="#" id="createRoom" onclick="createGameRoom()">Create one now</a>
                     </p>
                 </div>
-            `
+            `;
         } else {
             gameRoomDiv.innerHTML = data.map(room => `
                     <div class="d-flex justify-content-between align-items-center border p-2 mb-2">
@@ -66,36 +38,74 @@ async function listGameRooms() {
                     </div>
             `).join('');
         }
-    } catch(error) {
-        console.log('Error retrieving gamerooms, ', error)
+    } catch (error) {
+        console.log('Error retrieving gamerooms:', error);
     }
 }
 
 async function createGameRoom() {
-    const accessToken = localStorage.getItem('access_token');
-
-    if (!accessToken) {
-        alert("Please log in to create a game room.");
-        return;
-    }
-
     try {
-        const response = await fetch('/quiz_app/api/game_room/', {
+        const data = await fetchWithToken('/quiz_app/api/game_room/', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${accessToken}`,
                 'Content-Type': 'application/json'
             }
         });
 
-        if (response.ok) {
-            const data = await response.json();
+        if (data?.room_code) {
             window.location.href = `/quiz_app/game_room/${data.room_code}`;
         } else {
-            const errorData = await response.json();
-            alert(errorData.message || "Error creating game room.");
+            alert(data?.message || "Error creating game room.");
         }
     } catch (error) {
         console.log("Error creating game room:", error);
     }
+}
+
+async function fetchWithToken(url, options = {}) {
+    const csrfToken = getCSRFToken();
+
+    // Ensure headers exist
+    options.headers = options.headers || {};
+
+    // Add CSRF token for unsafe requests
+    if (["POST", "PUT", "DELETE"].includes(options.method?.toUpperCase())) {
+        options.headers["X-CSRFToken"] = csrfToken;
+    }
+
+    // Always include credentials (cookies)
+    options.credentials = "include";
+
+    let response = await fetch(url, options);
+
+    if (response.status === 403) {
+        console.log("403 Forbidden - Possible CSRF issue or permission error");
+    }
+
+    if (response.status === 401) {
+        console.log("Access token expired, attempting refresh...");
+
+        const refreshResponse = await fetch("/quiz_app/refresh_token/", {
+            method: "POST",
+            credentials: "include"
+        });
+
+        if (refreshResponse.ok) {
+            console.log("Token refreshed, retrying request...");
+            response = await fetch(url, options);
+        } else {
+            console.log("Refresh token expired, forcing logout...");
+            window.location.href = "/quiz_app/login_page/";
+            return;
+        }
+    }
+
+    return response.json();
+}
+
+function getCSRFToken() {
+    return document.cookie
+        .split('; ')
+        .find(row => row.startsWith('csrftoken='))
+        ?.split('=')[1];
 }
