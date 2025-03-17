@@ -62,6 +62,7 @@ class GameState(models.Model):
     question_index = models.IntegerField(default=0)
     is_over = models.BooleanField(default=False)
     questions = models.JSONField(default=list)  # Stores the 20 selected questions
+    end_time = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"GameState for {self.game.room_code}"

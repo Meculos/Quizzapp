@@ -2,8 +2,9 @@ import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
 from channels.db import database_sync_to_async
+from channels.layers import get_channel_layer
 from .models import GameRoom, Player, Question, GameState, PlayerGameState
-import random
+import random, asyncio
 from datetime import datetime, timedelta
 
 
@@ -81,18 +82,25 @@ class GameLobbyConsumer(AsyncWebsocketConsumer):
             player.is_ready = True
             player.save()
 
-    @sync_to_async
-    def start_game(self):
+    async def start_game(self):
         """Start the game if all players are ready and notify clients."""
-        game_room = GameRoom.objects.filter(room_code=self.room_code).first()
+        
+        # Fetch game room safely
+        game_room = await sync_to_async(lambda: GameRoom.objects.filter(room_code=self.room_code).first())()
+        
         if game_room:
-            players = Player.objects.filter(game=game_room)
-            if all(player.is_ready for player in players):  # Ensure all are ready
-                game_room.is_active = False  # Mark game as started
-                game_room.save()
-                
-                # Broadcast to all players to redirect
-                self.channel_layer.group_send(
+            # Fetch all players safely
+            players = await sync_to_async(lambda: list(Player.objects.filter(game=game_room)))()
+
+            # Ensure all players are ready
+            if all(player.is_ready for player in players):  
+                # Mark game as started (must be inside sync_to_async)
+                await sync_to_async(lambda: setattr(game_room, 'is_active', False))()
+                await sync_to_async(game_room.save)()
+
+                # Send game start message to all players
+                channel_layer = get_channel_layer()
+                await channel_layer.group_send(
                     self.room_group_name,
                     {
                         "type": "game_started"
@@ -110,11 +118,14 @@ class GameAreaConsumer(AsyncWebsocketConsumer):
         self.room_code = self.scope["url_route"]["kwargs"]["room_code"]
         self.room_group_name = f"game_area_{self.room_code}"
 
+        # Fetch game room once on connection
+        self.game_room = await database_sync_to_async(GameRoom.objects.get)(room_code=self.room_code)
+
         # Join the WebSocket group
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
 
-        # Select random category and fetch questions
+        # Start the game
         await self.start_game()
 
     async def disconnect(self, close_code):
@@ -125,10 +136,21 @@ class GameAreaConsumer(AsyncWebsocketConsumer):
         categories = [choice[0] for choice in Question.CATEGORY_CHOICES]
         selected_category = random.choice(categories)
 
-        questions = list(Question.objects.filter(category=selected_category).order_by("?")[:20])
+        questions = await database_sync_to_async(
+            lambda: list(Question.objects.filter(category=selected_category).order_by("?")[:20])
+        )()
 
-        game_state = await database_sync_to_async(GameState.objects.get)(game=self.game_room)
-        await database_sync_to_async(game_state.questions.set)(questions)
+        # Fetch or create the game state
+        game_state, created = await database_sync_to_async(GameState.objects.get_or_create)(game=self.game_room)
+
+        if not created and game_state.end_time:
+            return
+
+        game_state.questions = [q.id for q in questions]  # Store question IDs
+        game_state.end_time = datetime.now() + timedelta(minutes=2)
+
+        await database_sync_to_async(game_state.save)()  # Save the updated GameState
+
         question_list = [
             {
                 "id": q.id,
@@ -143,7 +165,7 @@ class GameAreaConsumer(AsyncWebsocketConsumer):
         self.game_data = {
             "category": selected_category,
             "questions": question_list,
-            "end_time": (datetime.now(datetime.timezone.utc) + timedelta(minutes=2)).isoformat(),
+            "end_time": game_state.end_time.isoformat(),
         }
 
         # Send data to all players
@@ -171,20 +193,24 @@ class GameAreaConsumer(AsyncWebsocketConsumer):
             selected_answer = data["answer"]
             player = self.scope["user"]  # Assuming authenticated users
 
-            self.game_room = await database_sync_to_async(GameRoom.objects.get)(room_code=self.room_code)
-
             # Get the game state and player state
-            game_state = await database_sync_to_async(GameState.objects.get_or_create)(game=self.game_room)
+            game_state, _ = await database_sync_to_async(GameState.objects.get_or_create)(game=self.game_room)
             player_state, _ = await database_sync_to_async(PlayerGameState.objects.get_or_create)(
                 game_state=game_state, player=player
             )
 
+            question_ids = await database_sync_to_async(lambda: game_state.questions)()
+            questions = await database_sync_to_async(lambda: list(Question.objects.filter(id__in=question_ids)))()
+
+
             # Find the correct answer
-            for q in game_state.questions:
-                if q["id"] == question_id:
-                    correct_answer = q["correct_answer"]
+            correct_answer = None
+            for q in questions:
+                if q.id == question_id:  # Now q is a Question object, so this works
+                    correct_answer = q.correct_answer
                     break
-            else:
+
+            if correct_answer is None:
                 return  # Invalid question ID
 
             # Submit the answer and update score
@@ -206,14 +232,20 @@ class GameAreaConsumer(AsyncWebsocketConsumer):
                 }
             )
 
-
     async def update_scores(self, event):
+        # Fetch game state
         game_state = await database_sync_to_async(GameState.objects.get)(game=self.game_room)
-        player_states = await database_sync_to_async(PlayerGameState.objects.filter)(game_state=game_state)
-        scores = [
-            {"username": state.player.username, "score": state.score}
-            for state in player_states
-        ]
+
+        # Fetch all player states
+        player_states = await database_sync_to_async(lambda: list(PlayerGameState.objects.filter(game_state=game_state)))()
+
+        # Fetch player usernames asynchronously
+        async def get_player_data(state):
+            player = await database_sync_to_async(lambda: state.player)()  # Fetch player
+            return {"username": player.username, "score": state.score}  # Now access safely
+
+        scores = await asyncio.gather(*(get_player_data(state) for state in player_states))
+
         await self.channel_layer.group_send(
             self.room_group_name,
             {
@@ -253,18 +285,20 @@ class GameResultConsumer(AsyncWebsocketConsumer):
         """Fetch and send game results"""
         gameroom = await database_sync_to_async(GameRoom.objects.get)(room_code=self.room_code)
         gamestate = await database_sync_to_async(GameState.objects.get)(game=gameroom)
-        playerstate = await database_sync_to_async(list)(
+
+        # Ensure safe query execution
+        player_states = await database_sync_to_async(lambda: list(
             PlayerGameState.objects.filter(game_state=gamestate).order_by("-score")
-        )
+        ))()
 
-        results = [
-            {
-                "username": p.player.username,
-                "score": p.score
-            }
-            for p in playerstate
-        ]
+        async def get_player_score(state):
+            player = await database_sync_to_async(lambda: state.player)()  # Fetch player safely
+            return {"username": player.username, "score": state.score}  # Return player data
 
+        # Fetch all player scores concurrently
+        results = await asyncio.gather(*(get_player_score(state) for state in player_states))
+
+        # Send results to the WebSocket group
         await self.channel_layer.group_send(
             self.room_group_name,
             {
@@ -272,7 +306,7 @@ class GameResultConsumer(AsyncWebsocketConsumer):
                 "results": results,
             }
         )
-
+        
     async def send_result_data(self, event):
         """Send game results to all players"""
         await self.send(text_data=json.dumps({

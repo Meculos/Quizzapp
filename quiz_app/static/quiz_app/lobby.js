@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = JSON.parse(event.data);
 
         if (data.type === "start_game") {
-            window.location.href = `/game_area/${roomCode}/`;  // Redirect all players
+            window.location.href = `/quiz_app/game_room/${roomCode}/game_area/`;  // Redirect all players
         }
         
         const playerListDiv = document.getElementById("player-list");
@@ -46,7 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isHost) {
         startGameBtn.addEventListener("click", function() {
             socket.send(JSON.stringify({ action: "start_game" }));
-            window.location.href = `/quiz_app/game_room/${roomCode}/game_area/`
         });
     }
 })
