@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function displayResults(results) {
-        const resultsContainer = document.querySelector(".question-container");
+        const resultsContainer = document.querySelector(".result-container");
         resultsContainer.innerHTML = "";
 
         results.forEach(result => {
