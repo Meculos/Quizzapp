@@ -75,8 +75,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let timerStarted = false;  // Prevent multiple timers
 
     function startTimer(endTime) {
-        if (timerStarted) return;  // Prevent multiple timers
-        timerStarted = true;
+        // if (timerStarted) return;  // Prevent multiple timers
+        // timerStarted = true;
     
         const timerElement = document.getElementById("timer");
         if (!timerElement) {

@@ -14,7 +14,7 @@ urlpatterns = [
     # rest framework paths
     path('register/', views.RegisterView.as_view()),
     path('login/', views.LoginApiView.as_view()),
-    path('logout/', views.LogoutApiView.as_view(), name='logout'),
+    path('logout/', views.LogoutApiView.as_view()),
     path('refresh_token/', views.RefreshTokenView.as_view()),
 
     # django paths
