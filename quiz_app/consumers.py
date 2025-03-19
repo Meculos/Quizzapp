@@ -143,8 +143,8 @@ class GameAreaConsumer(AsyncWebsocketConsumer):
         # Fetch or create the game state
         game_state, created = await database_sync_to_async(GameState.objects.get_or_create)(game=self.game_room)
 
-        if not created and game_state.end_time:
-            return
+        # if not created and game_state.end_time:
+        #     return
 
         game_state.questions = [q.id for q in questions]  # Store question IDs
         game_state.end_time = datetime.now() + timedelta(minutes=2)
