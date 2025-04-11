@@ -23,12 +23,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function displayQuestions(gameData) {
         const questionsContainer = document.querySelector(".question-container");
+<<<<<<< HEAD
         questionsContainer.innerHTML = ""; // Clear previous content
         questionsContainer.className = "question-container flex-column qconstyle center gap-20 w-100";
     
         const categoryDiv = document.getElementById('category');
         categoryDiv.innerHTML = `
             <h2 class="category-heading">Category: <strong>${gameData.category}</strong></h2>
+=======
+        questionsContainer.innerHTML = "";  // Clear previous content
+        questionsContainer.style.display = "flex";
+        questionsContainer.style.flexDirection = "column";
+        questionsContainer.style.alignItems = "center";
+        questionsContainer.style.gap = "20px"; // Space between questions
+    
+        const categoryDiv = document.getElementById('category');
+        categoryDiv.innerHTML = `
+            <h2 style="text-align: center; color: white;">Category: <strong>${gameData.category}</strong></h2>
+>>>>>>> 4f62db26379296415cb96dc18f78b8a9f805d708
         `;
     
         gameData.questions.forEach((question, index) => {
@@ -39,10 +51,20 @@ document.addEventListener('DOMContentLoaded', () => {
             questionText.textContent = `${index + 1}. ${question.question_text}`;
             questionElement.appendChild(questionText);
     
+<<<<<<< HEAD
             let answersContainer = document.createElement("div");
             answersContainer.className = "answers-container";
     
             question.answers.forEach(answer => {
+=======
+            let shuffledAnswers = question.answers;
+            let answersContainer = document.createElement("div");
+            answersContainer.style.display = "flex";
+            answersContainer.style.flexDirection = "column";
+            answersContainer.style.gap = "8px"; // Space between answers
+    
+            shuffledAnswers.forEach(answer => {
+>>>>>>> 4f62db26379296415cb96dc18f78b8a9f805d708
                 let answerDiv = document.createElement("div");
                 answerDiv.classList.add("answer-option");
     
@@ -55,7 +77,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
                 let label = document.createElement("label");
                 label.textContent = answer;
+<<<<<<< HEAD
                 label.classList.add("answer-label");
+=======
+>>>>>>> 4f62db26379296415cb96dc18f78b8a9f805d708
     
                 answerDiv.appendChild(input);
                 answerDiv.appendChild(label);
@@ -65,6 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
             questionElement.appendChild(answersContainer);
             questionsContainer.appendChild(questionElement);
         });
+<<<<<<< HEAD
     }
     
 
@@ -119,6 +145,9 @@ document.addEventListener('DOMContentLoaded', () => {
     //         questionsContainer.appendChild(questionElement);
     //     });
     // }    
+=======
+    }    
+>>>>>>> 4f62db26379296415cb96dc18f78b8a9f805d708
 
     let timerStarted = false;  // Prevent multiple timers
 
@@ -132,7 +161,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
     
+<<<<<<< HEAD
         const timerInterval = setInterval(() => {
+=======
+        timerInterval = setInterval(() => {
+>>>>>>> 4f62db26379296415cb96dc18f78b8a9f805d708
             let now = new Date().getTime();
             let distance = endTime - now;
     

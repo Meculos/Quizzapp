@@ -94,7 +94,11 @@ DATABASES = {
         "NAME": os.getenv("POSTGRES_DB"),
         "USER": os.getenv("POSTGRES_USER"),
         "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+<<<<<<< HEAD
         "HOST": "localhost",
+=======
+        "HOST": "db",
+>>>>>>> 4f62db26379296415cb96dc18f78b8a9f805d708
         "PORT": "5432",
         "CONN_MAX_AGE": 600
     }
@@ -166,7 +170,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6380)],  # Ensure Redis is running
+            "hosts": [("redis", 6380)],  # Ensure Redis is running
         },
     },
 }

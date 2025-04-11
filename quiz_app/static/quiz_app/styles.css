@@ -25,6 +25,7 @@ body {
     padding: 15px;
 }
 
+<<<<<<< HEAD
 .qconstyle {
     display: flex;
     flex-direction: column;
@@ -93,6 +94,9 @@ body {
 
 
 /* .question-container {
+=======
+.question-container {
+>>>>>>> 4f62db26379296415cb96dc18f78b8a9f805d708
     width: 80%;
     margin: auto;
     display: flex;
@@ -114,12 +118,17 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
+<<<<<<< HEAD
 } */
+=======
+}
+>>>>>>> 4f62db26379296415cb96dc18f78b8a9f805d708
 
 h2 {
     text-align: center;
     color: white;
 }
+<<<<<<< HEAD
 
 .category_text {
     font-weight: bold;
@@ -306,3 +315,5 @@ h2 {
     border: 1px solid rgb(110, 102, 102);
     color: rgb(110, 102, 102);
 }
+=======
+>>>>>>> 4f62db26379296415cb96dc18f78b8a9f805d708
