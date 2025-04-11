@@ -29,13 +29,14 @@ async function listGameRooms() {
                 </div>
             `;
         } else {
-            gameRoomDiv.innerHTML = data.map(room => `
+            document.getElementById('createGameButton').innerHTML = `
                     <div class="d-flex justify-content-center">
-                        <p class="mb-4" onclick="createGameRoom()" style=color: blue;>
+                        <button id="creategame" onclick="createGameRoom()">
                             Create a new gameroom
-                        </p>
+                        </button>
                     </div>
-
+            `
+            gameRoomDiv.innerHTML = data.map(room => `
                     <div class="d-flex justify-content-between align-items-center border p-2 mb-2">
                         <p class="m-0">${room.host_username}'s Game</p>
                         <a class="btn btn-outline-light" href="/quiz_app/game_room/${room.room_code}">

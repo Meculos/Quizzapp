@@ -1,0 +1,24 @@
+{% extends "quiz_app/layout.html" %}
+{% load static %}
+
+{% block title %}
+    Results Page - Quizzapp
+{% endblock %}
+
+{% block main %}
+    <div>
+        <p id="result"></p>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-sm-12 mb-4">
+            <button class="w-100" id="playAgain">Play Again</button>
+        </div>
+        <div class="col-md-6 col-sm-12">
+            <button class="w-100" id="homepage">To Homepage</button>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'quiz_app/results.js' %}"></script>
+{% endblock %}

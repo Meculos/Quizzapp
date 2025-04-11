@@ -1,0 +1,20 @@
+{% extends "quiz_app/layout.html" %}
+{% load static %}
+
+{% block title %}
+    Single Player Mode - Quizzapp
+{% endblock %}
+
+{% block main %}
+    <div class="mb-4">
+        <p class="category_text">CHOOSE A CATEGORY</p>
+    </div>
+    <div class="row">
+        {% for category in categories %}
+            <div class="col-md-4 col-sm-6">
+                <a class="category_buttons w-100 text-center d-block"
+                 href="{% url 'single_play_game' category.value %}">{{ category.label|capfirst }}</a>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

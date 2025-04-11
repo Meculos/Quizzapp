@@ -23,15 +23,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function displayQuestions(gameData) {
         const questionsContainer = document.querySelector(".question-container");
-        questionsContainer.innerHTML = "";  // Clear previous content
-        questionsContainer.style.display = "flex";
-        questionsContainer.style.flexDirection = "column";
-        questionsContainer.style.alignItems = "center";
-        questionsContainer.style.gap = "20px"; // Space between questions
+        questionsContainer.innerHTML = ""; // Clear previous content
+        questionsContainer.className = "question-container flex-column qconstyle center gap-20 w-100";
     
         const categoryDiv = document.getElementById('category');
         categoryDiv.innerHTML = `
-            <h2 style="text-align: center; color: white;">Category: <strong>${gameData.category}</strong></h2>
+            <h2 class="category-heading">Category: <strong>${gameData.category}</strong></h2>
         `;
     
         gameData.questions.forEach((question, index) => {
@@ -42,13 +39,10 @@ document.addEventListener('DOMContentLoaded', () => {
             questionText.textContent = `${index + 1}. ${question.question_text}`;
             questionElement.appendChild(questionText);
     
-            let shuffledAnswers = question.answers;
             let answersContainer = document.createElement("div");
-            answersContainer.style.display = "flex";
-            answersContainer.style.flexDirection = "column";
-            answersContainer.style.gap = "8px"; // Space between answers
+            answersContainer.className = "answers-container";
     
-            shuffledAnswers.forEach(answer => {
+            question.answers.forEach(answer => {
                 let answerDiv = document.createElement("div");
                 answerDiv.classList.add("answer-option");
     
@@ -61,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
                 let label = document.createElement("label");
                 label.textContent = answer;
+                label.classList.add("answer-label");
     
                 answerDiv.appendChild(input);
                 answerDiv.appendChild(label);
@@ -70,7 +65,60 @@ document.addEventListener('DOMContentLoaded', () => {
             questionElement.appendChild(answersContainer);
             questionsContainer.appendChild(questionElement);
         });
-    }    
+    }
+    
+
+    // function displayQuestions(gameData) {
+    //     const questionsContainer = document.querySelector(".question-container");
+    //     questionsContainer.innerHTML = "";  // Clear previous content
+    //     questionsContainer.style.display = "flex";
+    //     questionsContainer.style.flexDirection = "column";
+    //     questionsContainer.style.alignItems = "center";
+    //     questionsContainer.style.gap = "20px"; // Space between questions
+    //     questionsContainer.classList.add('w-100')
+    
+    //     const categoryDiv = document.getElementById('category');
+    //     categoryDiv.innerHTML = `
+    //         <h2 style="text-align: center; color: white;">Category: <strong>${gameData.category}</strong></h2>
+    //     `;
+    
+    //     gameData.questions.forEach((question, index) => {
+    //         let questionElement = document.createElement("div");
+    //         questionElement.classList.add("question-card");
+    
+    //         let questionText = document.createElement("p");
+    //         questionText.textContent = `${index + 1}. ${question.question_text}`;
+    //         questionElement.appendChild(questionText);
+    
+    //         let shuffledAnswers = question.answers;
+    //         let answersContainer = document.createElement("div");
+    //         answersContainer.style.display = "flex";
+    //         answersContainer.style.flexDirection = "column";
+    //         answersContainer.style.gap = "8px"; // Space between answers
+    
+    //         shuffledAnswers.forEach(answer => {
+    //             let answerDiv = document.createElement("div");
+    //             answerDiv.classList.add("answer-option");
+    
+    //             let input = document.createElement("input");
+    //             input.type = "radio";
+    //             input.name = `question-${index}`;
+    //             input.classList.add("answer-input");
+    //             input.setAttribute("data-correct", answer === question.correct_answer);
+    //             input.onclick = () => submitAnswer(question.id, answer);
+    
+    //             let label = document.createElement("label");
+    //             label.textContent = answer;
+    
+    //             answerDiv.appendChild(input);
+    //             answerDiv.appendChild(label);
+    //             answersContainer.appendChild(answerDiv);
+    //         });
+    
+    //         questionElement.appendChild(answersContainer);
+    //         questionsContainer.appendChild(questionElement);
+    //     });
+    // }    
 
     let timerStarted = false;  // Prevent multiple timers
 
@@ -84,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
     
-        timerInterval = setInterval(() => {
+        const timerInterval = setInterval(() => {
             let now = new Date().getTime();
             let distance = endTime - now;
     

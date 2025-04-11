@@ -17,14 +17,6 @@ import datetime
 
 from django.http import JsonResponse
 
-def current_user(request):
-    if request.user.is_authenticated:
-        return JsonResponse({"user": request.user.username, "authenticated": True})
-    return JsonResponse({"user": None, "authenticated": False})
-
-
-# Create your views here.
-
 # rest framework views.....
 class RegisterView(APIView):
     permission_classes = [AllowAny]
@@ -181,3 +173,51 @@ def game_results(request, room_code):
     return render(request, "quiz_app/game_results.html", {
         "room_code": room_code,
     })
+
+def single_play_category(request):
+    categories = [{'value': choice[0], 'label': choice[1]} for choice in Question.CATEGORY_CHOICES]
+
+    return render(request, "quiz_app/single_play_category.html", {
+        "categories": categories,
+    })
+
+def single_play_game(request, category):
+    # Check if game already exists in session
+    if 'game_questions' in request.session:
+        prepared_questions = request.session['game_questions']
+    else:
+        # Prepare new questions
+        questions = list(Question.objects.filter(category=category))
+        random_questions = random.sample(questions, min(len(questions), 20))
+
+        prepared_questions = []
+        for question in random_questions:
+            answers = question.wrong_answers + [question.correct_answer]
+            random.shuffle(answers)
+
+            prepared_answers = []
+            for answer in answers:
+                prepared_answers.append({
+                    "text": answer,
+                    "is_correct": answer == question.correct_answer
+                })
+
+            prepared_questions.append({
+                "question_text": question.question_text,
+                "answers": prepared_answers,
+            })
+
+        # Store in session!
+        request.session['game_questions'] = prepared_questions
+
+    return render(request, "quiz_app/single_play_game.html", {
+        "questions": prepared_questions
+    })
+
+def end_game(request):
+    if 'game_questions' in request.session:
+        del request.session['game_questions']
+    return JsonResponse({'message': 'Game ended'})
+
+def results(request):
+    return render(request, "quiz_app/results.html")

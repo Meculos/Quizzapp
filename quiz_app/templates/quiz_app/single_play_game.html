@@ -1,0 +1,30 @@
+{% extends "quiz_app/layout.html" %}
+{% load static %}
+
+{% block title %}
+    Game Room - Quizzapp
+{% endblock %}
+
+{% block main %}
+    <div>
+        <p id="timer"></p>
+    </div>
+    <div>
+        {% for question in questions %}
+            <div class="question-block mb-4">
+                <p class="question_text">{{ question.question_text }}</p>
+                <div class="answers">
+                    {% for answer in question.answers %}
+                    <div>
+                        <button class="answer_buttons w-100" data-correct="{{ answer.is_correct }}">{{ answer.text }}</button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'quiz_app/single_play_gameroom.js' %}"></script>
+{% endblock %}

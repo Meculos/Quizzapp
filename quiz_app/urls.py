@@ -26,7 +26,11 @@ urlpatterns = [
     path("game_room/", views.gameroom, name="game_room"),
     path("game_room/<str:room_code>/game_area/", views.game_area, name="game_area"),
     path('game_results/<str:room_code>/', views.game_results, name='game_results'),
-    path("api/current-user/", views.current_user, name="current_user"),
+
+    path('single_play_mode/', views.single_play_category, name='single_play_category'),
+    path('gameroom/<str:category>/', views.single_play_game, name='single_play_game'),
+    path('results/', views.results, name='results_page'),
+    path('end_game/', views.end_game, name='end_game'),
 ]
 
 router = DefaultRouter()
