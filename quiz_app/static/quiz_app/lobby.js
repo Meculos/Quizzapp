@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
         data.players.forEach(player => {
             const readyClass = player.is_ready ? "list-group-item-success" : "";
             playerListDiv.innerHTML += `
-                <div class="list-group-item d-flex justify-content-between ${readyClass}">
+                <div class="list-group-item d-flex mb-3 justify-content-between ${readyClass}">
                     <span>${player.username}</span>
                     ${player.is_ready ? "<span>✅ Ready</span>" : "<button class='btn btn-primary ready-btn' data-id='" + player.id + "'>Ready</button>"}
                 </div>

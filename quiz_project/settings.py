@@ -166,7 +166,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("redis", 6380)],  # Ensure Redis is running
+            "hosts": [("127.0.0.1", 6380)],  # Ensure Redis is running
         },
     },
 }

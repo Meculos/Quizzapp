@@ -37,12 +37,6 @@ async function listGameRooms() {
                     </div>
             `
             gameRoomDiv.innerHTML = data.map(room => `
-                    <div class="d-flex justify-content-center">
-                        <p class="mb-4" onclick="createGameRoom()" style=color: blue;>
-                            Create a new gameroom
-                        </p>
-                    </div>
-
                     <div class="d-flex justify-content-between align-items-center border p-2 mb-2">
                         <p class="m-0">${room.host_username}'s Game</p>
                         <a class="btn btn-outline-light" href="/quiz_app/game_room/${room.room_code}">
