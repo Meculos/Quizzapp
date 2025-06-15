@@ -38,10 +38,8 @@ ALLOWED_HOSTS = [
     'localhost',
 ]
 
-RENDER_URL = os.getenv("RENDER_URL")
-
 CSRF_TRUSTED_ORIGINS = [
-    RENDER_URL,
+    'https://quizzapp-9psh.onrender.com'
 ]
 
 # Application definition
