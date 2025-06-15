@@ -10,12 +10,39 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth import authenticate, login, logout
 from rest_framework import serializers
+from django.contrib.auth.decorators import user_passes_test
+from django.conf import settings
+import os
+import csv
+import json
 import random
 from rest_framework import status, generics, viewsets
 import datetime
+from django.http import HttpResponse
 
 
 from django.http import JsonResponse
+
+@user_passes_test(lambda u: u.is_superuser)
+def import_questions(request):
+    csv_path = os.path.join(settings.BASE_DIR, 'quiz_app', 'data', 'questions.csv')
+
+    with open(csv_path, newline='', encoding='utf-8') as csvfile:
+        reader = csv.DictReader(csvfile)
+        count = 0
+        for row in reader:
+            try:
+                Question.objects.create(
+                    question_text=row['question_text'],
+                    category=row['category'],
+                    correct_answer=row['correct_answer'],
+                    wrong_answers=json.loads(row['wrong_answers'])
+                )
+                count += 1
+            except Exception as e:
+                print(f"Error on row {row['id']}: {e}")
+
+    return HttpResponse(f"✅ Imported {count} questions successfully.")
 
 # rest framework views.....
 class RegisterView(APIView):
