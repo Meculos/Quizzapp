@@ -221,14 +221,3 @@ def end_game(request):
 
 def results(request):
     return render(request, "quiz_app/results.html")
-
-def create_admin(request):
-    if User.objects.filter(username='admin').exists():
-        return JsonResponse({'message': 'Admin already exists'})
-
-    User.objects.create_superuser(
-        username='admin',
-        email='admin@example.com',
-        password='adminpassword'
-    )
-    return JsonResponse({'message': 'Admin user created'})

@@ -21,7 +21,6 @@ urlpatterns = [
     path('register_page/', views.register, name='register_view'),
     path('login_page/', views.login_user, name='login_view'),
     path('', views.index, name='homepage'),
-    path('create-admin/', views.create_admin),
     path('game_room/<uuid:room_code>/', views.join_game_room, name="join_game_room"),
     path('game_room/<str:room_code>/lobby/', views.game_lobby, name="game_lobby"),
     path("game_room/", views.gameroom, name="game_room"),

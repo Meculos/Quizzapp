@@ -32,8 +32,17 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    'quizzapp-9psh.onrender.com',
+    '127.0.0.1',
+    'localhost',
+]
 
+RENDER_URL = os.getenv("RENDER_URL")
+
+CSRF_TRUSTED_ORIGINS = [
+    RENDER_URL,
+]
 
 # Application definition
 
