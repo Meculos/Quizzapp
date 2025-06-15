@@ -1,7 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
     const roomCode = document.getElementById('roomcode').getAttribute('data-room-code')
 
-    const socket = new WebSocket(`ws://${window.location.host}/ws/game_results/${roomCode}/`)
+    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    const socket = new WebSocket(`${protocol}://${window.location.host}/ws/game_lobby/${roomId}/`);
+
 
     socket.onmessage = (event) => {
         const data = JSON.parse(event.data)

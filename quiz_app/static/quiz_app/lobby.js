@@ -5,7 +5,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const startGameBtn = document.getElementById("start-game-btn");
 
-    const socket = new WebSocket(`ws://${window.location.host}/ws/game_lobby/${roomCode}/`);
+    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    const socket = new WebSocket(`${protocol}://${window.location.host}/ws/game_lobby/${roomId}/`);
+
 
     socket.onmessage = function(event) {
         const data = JSON.parse(event.data);
