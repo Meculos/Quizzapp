@@ -25,7 +25,7 @@ from django.http import JsonResponse
 
 @user_passes_test(lambda u: u.is_superuser)
 def import_questions(request):
-    csv_path = os.path.join(settings.BASE_DIR, 'quiz_app', 'data', 'questions.csv')
+    csv_path = os.path.join(settings.BASE_DIR, 'quiz_app', 'data', 'quiz_app_question.csv')
 
     with open(csv_path, newline='', encoding='utf-8') as csvfile:
         reader = csv.DictReader(csvfile)
