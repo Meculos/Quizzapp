@@ -18,7 +18,7 @@ async function listGameRooms() {
             }
         });
 
-        if (!data) return;  // If user is logged out, stop execution
+        if (!data) return;
 
         if (data.length === 0) {
             gameRoomDiv.innerHTML = `
@@ -86,7 +86,8 @@ async function fetchWithToken(url, options = {}) {
     let response = await fetch(url, options);
 
     if (response.status === 403) {
-        console.log("403 Forbidden - Possible CSRF issue or permission error");
+        window.location.href = '/quiz_app/login_page/';
+        return;
     }
 
     if (response.status === 401) {

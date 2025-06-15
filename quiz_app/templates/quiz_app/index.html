@@ -6,39 +6,39 @@
 {% endblock %}
 
 {% block main %}
-    <div>
-        <h1 class="fw-bold">Ultimate Trivia Battle</h1>
+    <div class="text-center text-white py-5">
+        <h1 class="fw-bold display-4 mb-2" style="color: #ffca28;">Ultimate Trivia Battle</h1>
         <p class="lead">Test your knowledge solo or challenge others in real time!</p>
 
-        <div class="row mt-4">
-            <div class="col-md-6 mb-3">
-                <a href="{% url 'single_play_category' %}" class="btn btn-warning btn-lg w-100">🎮 Single Play</a>
+        <div class="row justify-content-center mt-4">
+            <div class="col-md-5 col-sm-10 mb-3">
+                <a href="{% url 'single_play_category' %}" class="btn btn-warning btn-lg w-100 rounded-pill fw-bold shadow">🎮 Single Play</a>
             </div>
-            <div class="col-md-6 mb-3">
-                <a href="{% url 'game_room' %}" class="btn btn-danger btn-lg w-100">⚔️ Multiplayer Mode</a>
+            <div class="col-md-5 col-sm-10 mb-3" id="multiplayer_btn" data-user-id="{{ user.id }}">
+                <a href="{% url 'game_room' %}" class="btn btn-danger btn-lg w-100 rounded-pill fw-bold shadow">⚔️ Multiplayer Mode</a>
             </div>
         </div>
 
-        <div class="card bg-secondary text-light mt-4">
+        <div class="card bg-dark bg-opacity-75 text-light mt-5 shadow-lg mx-auto" style="max-width: 500px; border-radius: 1rem;">
             <div class="card-body">
-                <h2 class="card-title">🏆 Leaderboard</h2>
+                <h2 class="card-title text-warning">🏆 Leaderboard</h2>
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item bg-secondary text-light">1. UserA - 5000 pts</li>
-                    <li class="list-group-item bg-secondary text-light">2. UserB - 4700 pts</li>
-                    <li class="list-group-item bg-secondary text-light">3. UserC - 4500 pts</li>
+                    <li class="list-group-item bg-transparent text-light border-0">1. UserA - 5000 pts</li>
+                    <li class="list-group-item bg-transparent text-light border-0">2. UserB - 4700 pts</li>
+                    <li class="list-group-item bg-transparent text-light border-0">3. UserC - 4500 pts</li>
                 </ul>
             </div>
         </div>
 
         <div class="mt-4">
             {% if user.is_authenticated %}
-                <p>Welcome, {{ user.username }}!</p>
-                <a class="btn btn-outline-light" href="#" id="logoutBtn">Logout</a>
+                <p class="text-light">Welcome, {{ user.username }}!</p>
+                <a class="btn btn-outline-light rounded-pill px-4" href="#" id="logoutBtn">Logout</a>
             {% else %}
-                <a class="btn btn-outline-light me-2" href="{% url 'login_view' %}">Login</a>
-                <a class="btn btn-outline-light" href="{% url 'register_view' %}">Register</a>
+                <a class="btn btn-outline-light rounded-pill me-2 px-4" href="{% url 'login_view' %}">Login</a>
+                <a class="btn btn-outline-light rounded-pill px-4" href="{% url 'register_view' %}">Register</a>
             {% endif %}
-        </div>        
+        </div>
     </div>
 {% endblock %}
 

@@ -6,32 +6,39 @@
 {% endblock %}
 
 {% block main %}
-    <div class="mt-3">
-        <form id="registerForm">
-            {% csrf_token %}
-            <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <input type="text" class="form-control" id="username" autofocus autocomplete="off" aria-describedby="userHelp">
-                <div id="userHelp" class="form-text">Avoid explicit content in your Username</div>
-            </div>
-            <div class="mb-3">
-                <label for="exampleInputEmail1" class="form-label">Email address</label>
-                <input type="email" class="form-control" id="email" autocomplete="off" aria-describedby="emailHelp">
-                <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
-            </div>
-            <div class="mb-3">
-                <label for="password1" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password1" autocomplete="off" aria-describedby="passwordhelp">
-                <div id="passwordhelp" class="form-text">Password should be between 8-20 characters and should be alphanumeric.
-                    No special characters or emojis allowed.
+    <div class="d-flex justify-content-center align-items-center mt-5">
+        <div class="card p-4 shadow-lg text-white" style="max-width: 500px; width: 100%; border-radius: 1rem; background: rgba(0, 0, 0, 0.5);">
+            <h3 class="text-center mb-4" style="color: #ffca28;">Create an Account</h3>
+            <form id="registerForm">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control rounded-pill bg-dark text-white border-0" id="username" placeholder="Enter username" autofocus autocomplete="off" aria-describedby="userHelp">
+                    <div id="userHelp" class="form-text text-light">Avoid explicit content in your username.</div>
                 </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email address</label>
+                    <input type="email" class="form-control rounded-pill bg-dark text-white border-0" id="email" placeholder="Enter email" autocomplete="off" aria-describedby="emailHelp">
+                    <div id="emailHelp" class="form-text text-light">We'll never share your email with anyone else.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="password1" class="form-label">Password</label>
+                    <input type="password" class="form-control rounded-pill bg-dark text-white border-0" id="password1" placeholder="Create password" autocomplete="off" aria-describedby="passwordhelp">
+                    <div id="passwordhelp" class="form-text text-light">8–20 characters, alphanumeric only. No special characters or emojis.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="password2" class="form-label">Repeat Password</label>
+                    <input type="password" class="form-control rounded-pill bg-dark text-white border-0" id="password2" placeholder="Repeat password" autocomplete="off">
+                </div>
+                <div class="d-grid gap-2 mt-3">
+                    <button type="submit" class="btn btn-warning rounded-pill fw-bold">Register</button>
+                </div>
+            </form>
+
+            <div class="text-center mt-3">
+                <p class="mb-0 text-light">Already have an account? <a href="{% url 'login_view' %}" class="text-warning text-decoration-none">Login here</a></p>
             </div>
-            <div class="mb-3">
-                <label for="password2" class="form-label">Repeat your password</label>
-                <input type="password" class="form-control" id="password2" autocomplete="off">
-            </div>
-            <button type="submit" class="btn btn-primary">Register</button>
-        </form>
+        </div>
     </div>
 {% endblock %}
 
