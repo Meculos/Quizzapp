@@ -19,7 +19,7 @@ from django.views.generic import RedirectView
 from django.urls import path, include
 
 urlpatterns = [
-    path('', RedirectView.as_view(pattern_name='quiz_app:index', permanent=False)),
+    path('', RedirectView.as_view(pattern_name='homepage', permanent=False)),
     path('admin/', admin.site.urls),
     path('quiz_app/', include('quiz_app.urls'))
 ]
