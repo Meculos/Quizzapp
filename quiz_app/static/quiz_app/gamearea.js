@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const roomCode = document.getElementById('roomcode').getAttribute('data-room-code')
 
     const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-    const socket = new WebSocket(`${protocol}://${window.location.host}/ws/game_lobby/${roomId}/`);
+    const socket = new WebSocket(`${protocol}://${window.location.host}/ws/game_lobby/${roomCode}/`);
 
 
     let timerInterval;
