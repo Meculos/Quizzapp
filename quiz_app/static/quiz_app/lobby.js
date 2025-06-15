@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (data.type === "start_game") {
             window.location.href = `/quiz_app/game_room/${roomCode}/game_area/`;  // Redirect all players
+            return;
         }
         
         const playerListDiv = document.getElementById("player-list");
